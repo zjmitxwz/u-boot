@@ -1,0 +1,129 @@
+/dts-v1/;
+#include "sun50i-h5.dtsi"
+#include "sunxi-common-regulators.dtsi"
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/pinctrl/sun4i-a10.h>
+
+/ {
+    model = "ZhouJiami Quark-n";
+    compatible = "friendlyarm,nanopi-neo2","quark-n", "allwinner,sun50i-h5";
+    
+	aliases {
+		serial0 = &uart0;
+		i2c5 = &s_i2c;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&leds_quark_n>, <&leds_r_quark_n>;
+
+		status {
+			label = "quark-n:blue:status";
+			gpios = <&pio 0 10 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
+		};
+
+		pwr {
+			label = "quark-n:green:pwr";
+			gpios = <&r_pio 0 10 GPIO_ACTIVE_HIGH>;
+			default-state = "on";
+		};
+	};
+
+	r_gpio_keys {
+		compatible = "gpio-keys";
+		input-name = "k1";
+		pinctrl-names = "default";
+		pinctrl-0 = <&sw_r_npi>;
+
+		k1@0 {
+			label = "k1";
+			linux,code = <KEY_POWER>;
+			gpios = <&r_pio 0 3 GPIO_ACTIVE_LOW>;
+		};
+	};
+	s_i2c: i2c@01f02400 {
+		compatible = "allwinner,sun6i-a31-i2c";
+		reg = <0x01f02400 0x400>;
+		status = "okay";
+		#address-cells = <1>;
+		#size-cells = <0>;
+	};
+};
+
+&ehci3 {
+	status = "okay";
+};
+
+&mmc0 {
+	bus-width = <4>;
+	cd-gpios = <&pio 5 6 GPIO_ACTIVE_HIGH>;
+	cd-inverted;
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc0_pins>, <&mmc0_cd_pin>;
+	boot_device=<0>;
+	status = "okay";
+	vmmc-supply = <&reg_vcc3v3>;
+};
+
+&mmc2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc2_8bit_pins>;
+	bus-width = <8>;
+	vmmc-supply = <&reg_vcc3v3>;
+	boot_device=<0>;
+	non-removable;
+	cap-mmc-hw-reset;
+	status = "okay";
+};
+&mmc2_8bit_pins {
+	drive-strength = <40>;
+	bias-pull-up;
+};
+
+
+&ohci3 {
+	status = "okay";
+};
+
+&pio {
+	leds_quark_n: led_pins@0 {
+		pins = "PA10";
+		function = "gpio_out";
+	};
+    mmc0_cd_pin: mmc0_cd_pin@0 {
+        allwinner,pins = "PF6";
+        allwinner,function = "gpio_in";
+        allwinner,drive = <SUN4I_PINCTRL_10_MA>;
+        allwinner,pull = <SUN4I_PINCTRL_PULL_UP>;
+    };
+};
+
+&r_pio {
+	leds_r_quark_n: led_pins@0 {
+		pins = "PL10";
+		function = "gpio_out";
+	};
+
+	sw_r_npi: key_pins@0 {
+		pins = "PL3";
+		function = "gpio_in";
+	};
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pa_pins>;
+	status = "okay";
+};
+
+&usbphy {
+	status = "okay";
+};
