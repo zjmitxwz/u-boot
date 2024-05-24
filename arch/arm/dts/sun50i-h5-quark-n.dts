@@ -63,26 +63,28 @@
 };
 
 &mmc0 {
-	bus-width = <4>;
-	cd-gpios = <&pio 5 6 GPIO_ACTIVE_HIGH>;
-	cd-inverted;
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc0_pins>, <&mmc0_cd_pin>;
-	boot_device=<0>;
-	status = "okay";
+	cd-gpios = <&pio 5 6 GPIO_ACTIVE_HIGH>;
 	vmmc-supply = <&reg_vcc3v3>;
+	bus-width = <4>;
+	boot_device=<0>;
+	non-removable;
+	cd-inverted;
+	status = "okay";
 };
 
 &mmc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&mmc2_8bit_pins>;
-	bus-width = <8>;
 	vmmc-supply = <&reg_vcc3v3>;
+	bus-width = <8>;
 	boot_device=<0>;
 	non-removable;
 	cap-mmc-hw-reset;
 	status = "okay";
 };
+
 &mmc2_8bit_pins {
 	drive-strength = <40>;
 	bias-pull-up;
